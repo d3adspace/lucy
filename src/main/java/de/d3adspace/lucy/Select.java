@@ -1,12 +1,15 @@
 package de.d3adspace.lucy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class Select {
   private Collection<String> select;
   private Collection<String> from;
+  private Collection<Join> joins;
   private Condition where;
   private Condition having;
   private int limit;
@@ -14,10 +17,13 @@ public final class Select {
   private Order order;
   private Collection<String> groupBy;
 
-  public Select(Collection<String> select, Collection<String> from, Condition where, int limit, int offset, Order order, Collection<String> groupBy) {
+  public Select(Collection<String> select, Collection<String> from, Collection<Join> joins,
+      Condition where, Condition having, int limit, int offset, Order order, Collection<String> groupBy) {
     this.select = select;
     this.from = from;
+    this.joins = joins;
     this.where = where;
+    this.having = having;
     this.limit = limit;
     this.offset = offset;
     this.order = order;
@@ -31,12 +37,67 @@ public final class Select {
   }
 
   public static Select from(String... table) {
-    return new Select(null, List.of(table), null, 0, 0, null, null);
+    return new Select(null, List.of(table), null, null, null, 0, 0, null, null);
   }
 
   public Select tables(String... tables) {
     Objects.requireNonNull(tables);
     this.from = List.of(tables);
+    return this;
+  }
+
+  public Select join(String table, String source, String target) {
+    Objects.requireNonNull(table);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(target);
+    if (joins == null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(Join.join(table, source, target));
+    return this;
+  }
+
+  public Select leftJoin(String table, String source, String target) {
+    Objects.requireNonNull(table);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(target);
+    if (joins == null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(Join.leftJoin(table, source, target));
+    return this;
+  }
+
+  public Select rightJoin(String table, String source, String target) {
+    Objects.requireNonNull(table);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(target);
+    if (joins == null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(Join.rightJoin(table, source, target));
+    return this;
+  }
+
+  public Select fullJoin(String table, String source, String target) {
+    Objects.requireNonNull(table);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(target);
+    if (joins == null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(Join.fullJoin(table, source, target));
+    return this;
+  }
+
+  public Select crossJoin(String table, String source, String target) {
+    Objects.requireNonNull(table);
+    Objects.requireNonNull(source);
+    Objects.requireNonNull(target);
+    if (joins == null) {
+      joins = new ArrayList<>();
+    }
+    joins.add(Join.crossJoin(table, source, target));
     return this;
   }
 
@@ -99,12 +160,13 @@ public final class Select {
   public String build() {
     var select = this.select == null ? "*" : String.join(", ", this.select);
     var from = this.from == null ? "" : String.join(", ", this.from);
-    var where = this.where == null ? "" : " WHERE " + this.where.toString();
-    var having = this.having == null ? "" : " HAVING " + this.having.toString();
+    var joins = this.joins == null ? "" : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
+    var where = this.where == null ? "" : " WHERE " + this.where;
+    var having = this.having == null ? "" : " HAVING " + this.having;
     var groupBy = this.groupBy == null ? "" : " GROUP BY " + String.join(", ", this.groupBy);
-    var orderBy = this.order == null ? "" : " ORDER BY " + this.order.toString();
+    var orderBy = this.order == null ? "" : " ORDER BY " + this.order;
     var limit = this.limit == 0 ? "" : " LIMIT " + this.limit;
     var offset = this.offset == 0 ? "" : " OFFSET " + this.offset;
-    return String.format("SELECT %s FROM %s%s%s%s%s%s%s", select, from, where, having, groupBy, orderBy, limit, offset);
+    return String.format("SELECT %s FROM %s%s%s%s%s%s%s%s", select, from, joins, where, having, groupBy, orderBy, limit, offset);
   }
 }

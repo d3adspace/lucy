@@ -252,4 +252,44 @@ class SelectTest {
   void testSelectXorWhere() {
     assertEquals("SELECT * FROM table WHERE (col1 = 'test' XOR col2 = 'test') XOR (col3 = 'test' XOR col4 = 'test')", Select.from("table").where(Condition.equal("col1", "test").xor(Condition.equal("col2", "test"))).xorWhere(Condition.equal("col3", "test").xor(Condition.equal("col4", "test"))).build());
   }
+
+  @Test
+  void testSelectInnerJoin() {
+    assertEquals("SELECT * FROM table1 INNER JOIN table2 ON table1.col1 = table2.col1", Select.from("table1").join("table2", "table1.col1", "table2.col1").build());
+  }
+
+  @Test
+  void testSelectInnerJoinWithWhere() {
+    assertEquals("SELECT * FROM table1 INNER JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").join("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
+  }
+
+  @Test
+  void testSelectFullJoin() {
+    assertEquals("SELECT * FROM table1 FULL JOIN table2 ON table1.col1 = table2.col1", Select.from("table1").fullJoin("table2", "table1.col1", "table2.col1").build());
+  }
+
+  @Test
+  void testSelectFullJoinWithWhere() {
+    assertEquals("SELECT * FROM table1 FULL JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").fullJoin("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
+  }
+
+  @Test
+  void testSelectRightJoin() {
+    assertEquals("SELECT * FROM table1 RIGHT JOIN table2 ON table1.col1 = table2.col1", Select.from("table1").rightJoin("table2", "table1.col1", "table2.col1").build());
+  }
+
+  @Test
+  void testSelectRightJoinWithWhere() {
+    assertEquals("SELECT * FROM table1 RIGHT JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").rightJoin("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
+  }
+
+  @Test
+  void testSelectLeftJoin() {
+    assertEquals("SELECT * FROM table1 LEFT JOIN table2 ON table1.col1 = table2.col1", Select.from("table1").leftJoin("table2", "table1.col1", "table2.col1").build());
+  }
+
+  @Test
+  void testSelectLeftJoinWithWhere() {
+    assertEquals("SELECT * FROM table1 LEFT JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").leftJoin("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
+  }
 }
