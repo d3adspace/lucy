@@ -1,6 +1,6 @@
 package de.d3adspace.lucy;
 
-public class Order {
+public final class Order {
   private String column;
   private boolean ascending;
 

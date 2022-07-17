@@ -1,6 +1,6 @@
 package de.d3adspace.lucy;
 
-public class CompositeCondition extends Condition {
+public final class CompositeCondition extends Condition {
   private CompositeCondition(Condition left, Operator operator, Condition right) {
     super(left, operator, right);
   }

@@ -292,4 +292,9 @@ class SelectTest {
   void testSelectLeftJoinWithWhere() {
     assertEquals("SELECT * FROM table1 LEFT JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").leftJoin("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
   }
+
+  @Test
+  void testSelectDistinct() {
+    assertEquals("SELECT DISTINCT * FROM table", Select.from("table").distinct().build());
+  }
 }

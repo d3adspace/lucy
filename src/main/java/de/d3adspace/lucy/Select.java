@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class Select {
+  private boolean distinct;
   private Collection<String> select;
   private Collection<String> from;
   private Collection<Join> joins;
@@ -17,8 +18,9 @@ public final class Select {
   private Order order;
   private Collection<String> groupBy;
 
-  public Select(Collection<String> select, Collection<String> from, Collection<Join> joins,
+  public Select(boolean distinct, Collection<String> select, Collection<String> from, Collection<Join> joins,
       Condition where, Condition having, int limit, int offset, Order order, Collection<String> groupBy) {
+    this.distinct = distinct;
     this.select = select;
     this.from = from;
     this.joins = joins;
@@ -37,7 +39,20 @@ public final class Select {
   }
 
   public static Select from(String... table) {
-    return new Select(null, List.of(table), null, null, null, 0, 0, null, null);
+    return new Select(false, null, List.of(table), null, null, null, 0, 0, null, null);
+  }
+
+  public Select distinct() {
+    return distinct(true);
+  }
+
+  public Select distinct(boolean distinct) {
+    this.distinct = distinct;
+    return this;
+  }
+
+  public boolean isDistinct() {
+    return distinct;
   }
 
   public Select tables(String... tables) {
@@ -158,6 +173,7 @@ public final class Select {
   }
 
   public String build() {
+    var distinct = this.distinct ? "DISTINCT " : "";
     var select = this.select == null ? "*" : String.join(", ", this.select);
     var from = this.from == null ? "" : String.join(", ", this.from);
     var joins = this.joins == null ? "" : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
@@ -167,6 +183,6 @@ public final class Select {
     var orderBy = this.order == null ? "" : " ORDER BY " + this.order;
     var limit = this.limit == 0 ? "" : " LIMIT " + this.limit;
     var offset = this.offset == 0 ? "" : " OFFSET " + this.offset;
-    return String.format("SELECT %s FROM %s%s%s%s%s%s%s%s", select, from, joins, where, having, groupBy, orderBy, limit, offset);
+    return String.format("SELECT %s%s FROM %s%s%s%s%s%s%s%s", distinct, select, from, joins, where, having, groupBy, orderBy, limit, offset);
   }
 }
