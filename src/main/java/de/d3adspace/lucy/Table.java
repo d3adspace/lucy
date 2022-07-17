@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-public class Table {
+public final class Table {
   public static Create create(String name) {
     return new Create(name, new LinkedList<>(), new LinkedList<>());
   }
