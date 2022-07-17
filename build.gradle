@@ -1,12 +1,20 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
-group 'de.d3adspace'
-version '1.0-SNAPSHOT'
-
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+group = 'd3.d3adspace'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '18'
+    targetCompatibility = '18'
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
@@ -16,4 +24,13 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
 }
