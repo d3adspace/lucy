@@ -35,15 +35,12 @@ public class Order {
   }
 
   public Order descending() {
-    return new Order(column, false);
-  }
-
-  public Order descending(boolean descending) {
-    return new Order(column, !descending);
+    this.ascending = false;
+    return this;
   }
 
   @Override
   public String toString() {
-    return column + " " + (ascending ? "ASC" : "DESC");
+    return column + (ascending ? "" : " DESC");
   }
 }

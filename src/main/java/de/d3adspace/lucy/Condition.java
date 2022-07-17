@@ -1,18 +1,23 @@
 package de.d3adspace.lucy;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Condition {
-  private Object left;
-  private Operator operator;
-  private Object value;
+  private final Object left;
+  private final Operator operator;
+  private final Object value;
 
   public Condition(Object left, Operator operator, Object value) {
     this.left = left;
     this.operator = operator;
     this.value = value;
+  }
+
+  public static Condition of(String left, String operator, String right) {
+    return new Condition(left, Operator.of(operator), right);
   }
 
   protected Object left() {
@@ -23,16 +28,8 @@ public class Condition {
     return value;
   }
 
-  public Object column() {
-    return left;
-  }
-
   public Operator operator() {
     return operator;
-  }
-
-  public Object value() {
-    return value;
   }
 
   public static Condition equal(String column, Object value) {
@@ -104,15 +101,27 @@ public class Condition {
   }
 
   public Condition and(Condition right) {
-    return new CompositeCondition(this, Operator.AND, right);
+    return new Condition(this, Operator.AND, right);
   }
 
   public Condition or(Condition right) {
-    return new CompositeCondition(this, Operator.OR, right);
+    return new Condition(this, Operator.OR, right);
   }
 
-  public Condition xor() {
-    return new CompositeCondition(this, Operator.XOR, null);
+  public Condition xor(Condition right) {
+    return new Condition(this, Operator.XOR, right);
+  }
+
+  public Condition andWhere(Condition right) {
+    return CompositeCondition.and(this, right);
+  }
+
+  public Condition orWhere(Condition right) {
+    return CompositeCondition.or(this, right);
+  }
+
+  public Condition xorWhere(Condition right) {
+    return CompositeCondition.xor(this, right);
   }
 
   private String compileValue() {
@@ -154,7 +163,7 @@ public class Condition {
     AND("AND"),
     OR("OR"),
     XOR("XOR"),
-    NOT("NOT");
+    NOT("NOT", false);
 
     private final String operatorValue;
     private final boolean quote;
@@ -168,8 +177,10 @@ public class Condition {
       this.quote = quote;
     }
 
-    public String operatorValue() {
-      return operatorValue;
+    public static Operator of(String operator) {
+      return Arrays.stream(values())
+          .filter(op -> op.operatorValue.equalsIgnoreCase(operator))
+          .findFirst().orElse(null);
     }
 
     @Override

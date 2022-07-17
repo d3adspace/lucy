@@ -24,18 +24,6 @@ public final class Select {
     this.groupBy = groupBy;
   }
 
-  public static Select all() {
-    return new Select(null, null, null, 0, 0, null, null);
-  }
-
-  public static Select select(String... columns) {
-    return new Select(List.of(columns), null, null, 0, 0, null, null);
-  }
-
-  public static Select select(Collection<String> select) {
-    return new Select(select, null, null, 0, 0, null, null);
-  }
-
   public Select columns(String... columns) {
     Objects.requireNonNull(columns);
     this.select = List.of(columns);
@@ -68,12 +56,17 @@ public final class Select {
   }
 
   public Select orWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.or(where);
+    this.where = this.where == null ? where : this.where.orWhere(where);
     return this;
   }
 
   public Select andWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.and(where);
+    this.where = this.where == null ? where : this.where.andWhere(where);
+    return this;
+  }
+
+  public Select xorWhere(Condition where) {
+    this.where = this.where == null ? where : this.where.xorWhere(where);
     return this;
   }
 

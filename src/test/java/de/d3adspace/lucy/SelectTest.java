@@ -14,6 +14,11 @@ class SelectTest {
   }
 
   @Test
+  void testSelectTables() {
+    assertEquals("SELECT * FROM table1, table2", Select.from("table").tables("table1", "table2").build());
+  }
+
+  @Test
   void testSelectMultiple() {
     assertEquals("SELECT * FROM table, table2", Select.from("table", "table2").build());
   }
@@ -50,12 +55,12 @@ class SelectTest {
 
   @Test
   void testSelectWithOrder() {
-    assertEquals("SELECT * FROM table ORDER BY col1 ASC", Select.from("table").orderBy("col1").build());
+    assertEquals("SELECT * FROM table ORDER BY col1", Select.from("table").orderBy("col1").build());
   }
 
   @Test
   void testSelectWithOrderAscending() {
-    assertEquals("SELECT * FROM table ORDER BY col1 ASC", Select.from("table").orderBy("col1", true).build());
+    assertEquals("SELECT * FROM table ORDER BY col1", Select.from("table").orderBy("col1", true).build());
   }
 
   @Test
@@ -65,32 +70,32 @@ class SelectTest {
 
   @Test
   void testSelectWithOrderAndLimit() {
-    assertEquals("SELECT * FROM table ORDER BY col1 ASC LIMIT 10", Select.from("table").orderBy("col1").limit(10).build());
+    assertEquals("SELECT * FROM table ORDER BY col1 LIMIT 10", Select.from("table").orderBy("col1").limit(10).build());
   }
 
   @Test
   void testSelectWithOrderAndOffset() {
-    assertEquals("SELECT * FROM table ORDER BY col1 ASC OFFSET 10", Select.from("table").orderBy("col1").offset(10).build());
+    assertEquals("SELECT * FROM table ORDER BY col1 OFFSET 10", Select.from("table").orderBy("col1").offset(10).build());
   }
 
   @Test
   void testSelectWithOrderAndLimitAndOffset() {
-    assertEquals("SELECT * FROM table ORDER BY col1 ASC LIMIT 10 OFFSET 10", Select.from("table").orderBy("col1").limit(10).offset(10).build());
+    assertEquals("SELECT * FROM table ORDER BY col1 LIMIT 10 OFFSET 10", Select.from("table").orderBy("col1").limit(10).offset(10).build());
   }
 
   @Test
   void testSelectWithOrderAndLimitAndOffsetAndWhere() {
-    assertEquals("SELECT * FROM table WHERE col1 = 'test' ORDER BY col1 ASC LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).orderBy("col1").limit(10).offset(10).build());
+    assertEquals("SELECT * FROM table WHERE col1 = 'test' ORDER BY col1 LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).orderBy("col1").limit(10).offset(10).build());
   }
 
   @Test
   void testSelectWithOrderAndLimitAndOffsetAndWhereAndGroupBy() {
-    assertEquals("SELECT * FROM table WHERE col1 = 'test' GROUP BY col1 ORDER BY col1 ASC LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").orderBy("col1").limit(10).offset(10).build());
+    assertEquals("SELECT * FROM table WHERE col1 = 'test' GROUP BY col1 ORDER BY col1 LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").orderBy("col1").limit(10).offset(10).build());
   }
 
   @Test
   void testSelectWithOrderAndLimitAndOffsetAndWhereAndGroupByAndHaving() {
-    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1 ASC LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).having(Condition.greaterThan("COUNT(*)", 0)).groupBy("col1").orderBy("col1").limit(10).offset(10).build());
+    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1 LIMIT 10 OFFSET 10", Select.from("table").where(Condition.equal("col1", "test")).having(Condition.greaterThan("COUNT(*)", 0)).groupBy("col1").orderBy("col1").limit(10).offset(10).build());
   }
 
   @Test
@@ -160,12 +165,12 @@ class SelectTest {
 
   @Test
   void testSelectWithWhereAndGroupByAndHavingAndOrder() {
-    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1 ASC", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").having(Condition.greaterThan("COUNT(*)", 0)).orderBy("col1").build());
+    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").having(Condition.greaterThan("COUNT(*)", 0)).orderBy("col1").build());
   }
 
   @Test
   void testSelectWithWhereAndGroupByAndHavingAndOrderAndLimit() {
-    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1 ASC LIMIT 10", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").having(Condition.greaterThan("COUNT(*)", 0)).orderBy("col1").limit(10).build());
+    assertEquals("SELECT * FROM table WHERE col1 = 'test' HAVING COUNT(*) > 0 GROUP BY col1 ORDER BY col1 LIMIT 10", Select.from("table").where(Condition.equal("col1", "test")).groupBy("col1").having(Condition.greaterThan("COUNT(*)", 0)).orderBy("col1").limit(10).build());
   }
 
   @Test
@@ -231,5 +236,20 @@ class SelectTest {
   @Test
   void testSelectWithInWithListAndWhereAndOrAndAndAnd() {
     assertEquals("SELECT * FROM table WHERE col1 IN (1, 2, 3) OR col2 = 1 AND col3 = 1 AND col4 = 1", Select.from("table").where(Condition.in("col1", Arrays.asList(1, 2, 3)).or(Condition.equal("col2", 1)).and(Condition.equal("col3", 1)).and(Condition.equal("col4", 1))).build());
+  }
+
+  @Test
+  void testSelectAndWhere() {
+    assertEquals("SELECT * FROM table WHERE (col1 = 'test' AND col2 = 'test') AND (col3 = 'test' AND col4 = 'test')", Select.from("table").where(Condition.equal("col1", "test").and(Condition.equal("col2", "test"))).andWhere(Condition.equal("col3", "test").and(Condition.equal("col4", "test"))).build());
+  }
+
+  @Test
+  void testSelectOrWhere() {
+    assertEquals("SELECT * FROM table WHERE (col1 = 'test' OR col2 = 'test') OR (col3 = 'test' OR col4 = 'test')", Select.from("table").where(Condition.equal("col1", "test").or(Condition.equal("col2", "test"))).orWhere(Condition.equal("col3", "test").or(Condition.equal("col4", "test"))).build());
+  }
+
+  @Test
+  void testSelectXorWhere() {
+    assertEquals("SELECT * FROM table WHERE (col1 = 'test' XOR col2 = 'test') XOR (col3 = 'test' XOR col4 = 'test')", Select.from("table").where(Condition.equal("col1", "test").xor(Condition.equal("col2", "test"))).xorWhere(Condition.equal("col3", "test").xor(Condition.equal("col4", "test"))).build());
   }
 }
