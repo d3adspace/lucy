@@ -289,6 +289,11 @@ class SelectTest {
   }
 
   @Test
+  void testSelectCrossJoin() {
+    assertEquals("SELECT * FROM table1 CROSS JOIN table2", Select.from("table1").crossJoin("table2").build());
+  }
+
+  @Test
   void testSelectLeftJoinWithWhere() {
     assertEquals("SELECT * FROM table1 LEFT JOIN table2 ON table1.col1 = table2.col1 WHERE table1.col2 = 'test'", Select.from("table1").leftJoin("table2", "table1.col1", "table2.col1").where(Condition.equal("table1.col2", "test")).build());
   }

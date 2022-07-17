@@ -51,10 +51,6 @@ public final class Select {
     return this;
   }
 
-  public boolean isDistinct() {
-    return distinct;
-  }
-
   public Select tables(String... tables) {
     Objects.requireNonNull(tables);
     this.from = List.of(tables);
@@ -105,14 +101,12 @@ public final class Select {
     return this;
   }
 
-  public Select crossJoin(String table, String source, String target) {
+  public Select crossJoin(String table) {
     Objects.requireNonNull(table);
-    Objects.requireNonNull(source);
-    Objects.requireNonNull(target);
     if (joins == null) {
       joins = new ArrayList<>();
     }
-    joins.add(Join.crossJoin(table, source, target));
+    joins.add(Join.crossJoin(table));
     return this;
   }
 

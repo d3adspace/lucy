@@ -29,13 +29,13 @@ public final class Join {
     return new Join(Type.FULL, table, sourceColumn, targetColumn);
   }
 
-  public static Join crossJoin(String table, String sourceColumn, String targetColumn) {
-    return new Join(Type.CROSS, table, sourceColumn, targetColumn);
+  public static Join crossJoin(String table) {
+    return new Join(Type.CROSS, table, null, null);
   }
 
   @Override
   public String toString() {
-    return type + " JOIN " + table + " ON " + sourceColumn + (targetColumn != null ? " = " + targetColumn : "");
+    return type + " JOIN " + table + (sourceColumn != null ? " ON " + sourceColumn + (targetColumn != null ? " = " + targetColumn : "") : "" );
   }
 
   public enum Type {
