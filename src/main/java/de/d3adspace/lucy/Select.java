@@ -1,22 +1,22 @@
 package de.d3adspace.lucy;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class Select {
-  private boolean distinct;
-  private Collection<String> select;
-  private Collection<String> from;
-  private Collection<Join> joins;
-  private Condition where;
-  private Condition having;
-  private int limit;
-  private int offset;
-  private Order order;
-  private Collection<String> groupBy;
+  private final boolean distinct;
+  private final Collection<String> select;
+  private final Collection<String> from;
+  private final Collection<Join> joins;
+  private final Condition where;
+  private final Condition having;
+  private final int limit;
+  private final int offset;
+  private final Order order;
+  private final Collection<String> groupBy;
 
   public Select(boolean distinct, Collection<String> select, Collection<String> from, Collection<Join> joins,
       Condition where, Condition having, int limit, int offset, Order order, Collection<String> groupBy) {
@@ -33,13 +33,12 @@ public final class Select {
   }
 
   public Select columns(String... columns) {
-    Objects.requireNonNull(columns);
-    this.select = List.of(columns);
-    return this;
+    var select = List.of(columns);
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public static Select from(String... table) {
-    return new Select(false, null, List.of(table), null, null, null, 0, 0, null, null);
+    return new Select(false, new LinkedList<>(), List.of(table), new LinkedList<>(), null, null, 0, 0, null, new LinkedList<>());
   }
 
   public Select distinct() {
@@ -47,23 +46,18 @@ public final class Select {
   }
 
   public Select distinct(boolean distinct) {
-    this.distinct = distinct;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select tables(String... tables) {
-    Objects.requireNonNull(tables);
-    this.from = List.of(tables);
-    return this;
+    var from = List.of(tables);
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select join(String table, String source, String target) {
     Objects.requireNonNull(table);
     Objects.requireNonNull(source);
     Objects.requireNonNull(target);
-    if (joins == null) {
-      joins = new ArrayList<>();
-    }
     joins.add(Join.join(table, source, target));
     return this;
   }
@@ -72,9 +66,6 @@ public final class Select {
     Objects.requireNonNull(table);
     Objects.requireNonNull(source);
     Objects.requireNonNull(target);
-    if (joins == null) {
-      joins = new ArrayList<>();
-    }
     joins.add(Join.leftJoin(table, source, target));
     return this;
   }
@@ -83,9 +74,6 @@ public final class Select {
     Objects.requireNonNull(table);
     Objects.requireNonNull(source);
     Objects.requireNonNull(target);
-    if (joins == null) {
-      joins = new ArrayList<>();
-    }
     joins.add(Join.rightJoin(table, source, target));
     return this;
   }
@@ -94,56 +82,43 @@ public final class Select {
     Objects.requireNonNull(table);
     Objects.requireNonNull(source);
     Objects.requireNonNull(target);
-    if (joins == null) {
-      joins = new ArrayList<>();
-    }
     joins.add(Join.fullJoin(table, source, target));
     return this;
   }
 
   public Select crossJoin(String table) {
     Objects.requireNonNull(table);
-    if (joins == null) {
-      joins = new ArrayList<>();
-    }
     joins.add(Join.crossJoin(table));
     return this;
   }
 
   public Select limit(int limit) {
-    this.limit = limit;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select offset(int offset) {
-    this.offset = offset;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select where(Condition where) {
-    this.where = where;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select orWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.orWhere(where);
-    return this;
+    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.orWhere(where), having, limit, offset, order, groupBy);
   }
 
   public Select andWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.andWhere(where);
-    return this;
+    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.andWhere(where), having, limit, offset, order, groupBy);
   }
 
   public Select xorWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.xorWhere(where);
-    return this;
+    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.xorWhere(where), having, limit, offset, order, groupBy);
   }
 
   public Select groupBy(String... columns) {
-    Objects.requireNonNull(columns);
-    this.groupBy = List.of(columns);
-    return this;
+    var groupBy = List.of(columns);
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public Select orderBy(String column) {
@@ -151,29 +126,26 @@ public final class Select {
   }
 
   public Select orderBy(String column, boolean ascending) {
-    Objects.requireNonNull(column);
-    this.order = Order.by(column, ascending);
-    return orderBy(order);
+    return orderBy(Order.by(column, ascending));
   }
 
   public Select orderBy(Order order) {
-    this.order = order;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
+
   }
 
   public Select having(Condition having) {
-    this.having = having;
-    return this;
+    return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
   }
 
   public String build() {
     var distinct = this.distinct ? "DISTINCT " : "";
-    var select = this.select == null ? "*" : String.join(", ", this.select);
-    var from = this.from == null ? "" : String.join(", ", this.from);
-    var joins = this.joins == null ? "" : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
+    var select = this.select.isEmpty() ? "*" : String.join(", ", this.select);
+    var from = this.from.isEmpty() ? "" : String.join(", ", this.from);
+    var joins = this.joins.isEmpty() ? "" : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
     var where = this.where == null ? "" : " WHERE " + this.where;
     var having = this.having == null ? "" : " HAVING " + this.having;
-    var groupBy = this.groupBy == null ? "" : " GROUP BY " + String.join(", ", this.groupBy);
+    var groupBy = this.groupBy.isEmpty() ? "" : " GROUP BY " + String.join(", ", this.groupBy);
     var orderBy = this.order == null ? "" : " ORDER BY " + this.order;
     var limit = this.limit == 0 ? "" : " LIMIT " + this.limit;
     var offset = this.offset == 0 ? "" : " OFFSET " + this.offset;
