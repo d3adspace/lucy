@@ -7,15 +7,16 @@ import java.util.stream.Collectors;
 public final class Update {
   private final String table;
   private final Map<String, Object> values;
-  private Condition where;
+  private final Condition where;
 
-  public Update(String table, Map<String, Object> values) {
+  private Update(String table, Map<String, Object> values, Condition where) {
     this.table = table;
     this.values = values;
+    this.where = where;
   }
 
   public static Update into(String table) {
-    return new Update(table, new LinkedHashMap<>());
+    return new Update(table, new LinkedHashMap<>(), null);
   }
 
   public Update set(String column, Object value) {
@@ -24,23 +25,19 @@ public final class Update {
   }
 
   public Update where(Condition where) {
-    this.where = where;
-    return this;
+    return new Update(table, values, where);
   }
 
   public Update orWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.orWhere(where);
-    return this;
+    return new Update(table, values, this.where == null ? where : this.where.orWhere(where));
   }
 
   public Update andWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.andWhere(where);
-    return this;
+    return new Update(table, values, this.where == null ? where : this.where.andWhere(where));
   }
 
   public Update xorWhere(Condition where) {
-    this.where = this.where == null ? where : this.where.xorWhere(where);
-    return this;
+    return new Update(table, values, this.where == null ? where : this.where.xorWhere(where));
   }
 
   @Override

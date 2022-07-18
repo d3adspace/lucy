@@ -1,8 +1,10 @@
 package de.d3adspace.lucy;
 
+import java.util.Objects;
+
 public final class Order {
-  private String column;
-  private boolean ascending;
+  private final String column;
+  private final boolean ascending;
 
   private Order(String column, boolean ascending) {
     this.column = column;
@@ -21,8 +23,8 @@ public final class Order {
     return column;
   }
 
-  public void column(String column) {
-    this.column = column;
+  public Order column(String column) {
+    return new Order(column, ascending);
   }
 
   public boolean ascending() {
@@ -30,17 +32,16 @@ public final class Order {
   }
 
   public Order ascending(boolean ascending) {
-    this.ascending = ascending;
-    return this;
+    return new Order(column, ascending);
   }
 
   public Order descending() {
-    this.ascending = false;
-    return this;
+    return new Order(column, false);
   }
 
   @Override
   public String toString() {
+    Objects.requireNonNull(column);
     return column + (ascending ? "" : " DESC");
   }
 }

@@ -20,7 +20,7 @@ public final class Database {
   }
 
   public Backup backup() {
-    return new Backup(name);
+    return new Backup(name, null, false);
   }
 
   public static Create create(String name) {
@@ -58,26 +58,26 @@ public final class Database {
   }
 
   public static Backup backup(String name) {
-    return new Backup(name);
+    return new Backup(name, null, false);
   }
 
   public static final class Backup {
     private final String name;
-    private String toDisk;
-    private boolean withDifferential;
+    private final String toDisk;
+    private final boolean withDifferential;
 
-    private Backup(String name) {
+    private Backup(String name, String toDisk, boolean withDifferential) {
       this.name = name;
+      this.toDisk = toDisk;
+      this.withDifferential = withDifferential;
     }
 
     public Backup toDisk(String toDisk) {
-      this.toDisk = toDisk;
-      return this;
+      return new Backup(name, toDisk, withDifferential);
     }
 
     public Backup withDifferential() {
-      this.withDifferential = true;
-      return this;
+      return new Backup(name, toDisk, true);
     }
 
     @Override

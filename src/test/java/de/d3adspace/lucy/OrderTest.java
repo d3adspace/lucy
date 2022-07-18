@@ -17,8 +17,7 @@ class OrderTest {
 
   @Test
   void testOrderColumnChanged() {
-    Order order = Order.by("col1");
-    order.column("col2");
+    Order order = Order.by("col1").column("col2");
     assertEquals("col2", order.column());
   }
 
