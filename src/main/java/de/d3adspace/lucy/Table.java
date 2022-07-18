@@ -1,10 +1,42 @@
 package de.d3adspace.lucy;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class Table {
+  private final String name;
+
+  public Table(String name) {
+    this.name = name;
+  }
+
+  public Drop drop() {
+    return drop(name);
+  }
+
+  public Truncate truncate() {
+    return truncate(name);
+  }
+
+  public Create create() {
+    return create(name);
+  }
+
+  public Alter alter() {
+    return alter(name);
+  }
+
+  public Rename rename(String newName) {
+    return new Rename(name, newName);
+  }
+
+  public static Table of(String name) {
+    return new Table(name);
+  }
+
   public static Truncate truncate(String table) {
     return new Truncate(table);
   }
@@ -15,6 +47,82 @@ public final class Table {
 
   public static Create create(String name) {
     return new Create(name, new LinkedList<>(), new LinkedList<>());
+  }
+
+  public static Alter alter(String name) {
+    return new Alter(name, new LinkedList<>(), new LinkedList<>(), new LinkedHashMap<>());
+  }
+
+  public static Rename rename(String name, String newName) {
+    return new Rename(name, newName);
+  }
+
+  public static final class Rename {
+    private final String name;
+    private final String newName;
+
+    private Rename(String name, String newName) {
+      this.name = name;
+      this.newName = newName;
+    }
+
+    @Override
+    public String toString() {
+      return "RENAME TABLE " + name + " TO " + newName;
+    }
+  }
+
+  public static final class Alter {
+    private final String name;
+    private final Collection<Column> addColumns;
+    private final Collection<String> dropColumns;
+    private final Map<String, String> renameColumns;
+
+    private Alter(String name, Collection<Column> addColumns, Collection<String> dropColumns,
+        Map<String, String> renameColumns) {
+      this.name = name;
+      this.addColumns = addColumns;
+      this.dropColumns = dropColumns;
+      this.renameColumns = renameColumns;
+    }
+
+    public Alter addColumn(Column column) {
+      addColumns.add(column);
+      return this;
+    }
+
+    public Alter addColumn(String name, String type) {
+      return addColumn(new Column(name, type));
+    }
+
+    public Alter dropColumn(String name) {
+      dropColumns.add(name);
+      return this;
+    }
+
+    public Alter renameColumn(String oldName, String newName) {
+      renameColumns.put(oldName, newName);
+      return this;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append("ALTER TABLE ").append(name);
+      if (!addColumns.isEmpty()) {
+        sb.append(" ADD COLUMN ").append(addColumns.stream().map(Column::toString).collect(
+            Collectors.joining(", ")));
+      }
+      if (!renameColumns.isEmpty()) {
+        sb.append(" RENAME COLUMN ").append(renameColumns.entrySet().stream()
+            .map(entry -> entry.getKey() + " TO " + entry.getValue()).collect(
+                Collectors.joining(", ")));
+      }
+      if (!dropColumns.isEmpty()) {
+        sb.append(" DROP COLUMN ").append(String.join(", ", dropColumns));
+      }
+      return sb.toString();
+    }
   }
 
   public static final class Truncate {
@@ -58,6 +166,7 @@ public final class Table {
       columns.add(new Column(name, type));
       return this;
     }
+
     public Create column(Column column) {
       this.columns.add(column);
       return this;
@@ -81,7 +190,8 @@ public final class Table {
       return "CREATE TABLE "
           + name
           + " (" + columns.stream().map(Column::toString).collect(Collectors.joining(", "))
-          + (foreignKeys.isEmpty() ? "" : ", " + foreignKeys.stream().map(ForeignKey::toString).collect(Collectors.joining(", ")))
+          + (foreignKeys.isEmpty() ? ""
+          : ", " + foreignKeys.stream().map(ForeignKey::toString).collect(Collectors.joining(", ")))
           + ")";
     }
   }
@@ -147,7 +257,9 @@ public final class Table {
 
     @Override
     public String toString() {
-      return name + " " + type + (notNull ? " NOT NULL" : "") + (autoIncrement ? " AUTO_INCREMENT" : "") + (unique ? " UNIQUE" : "") + (primaryKey ? " PRIMARY KEY" : "") + (defaultValue != null ? " DEFAULT " + (defaultValue instanceof String ? "'" + defaultValue + "'" : defaultValue) : "");
+      return name + " " + type + (notNull ? " NOT NULL" : "") + (autoIncrement ? " AUTO_INCREMENT"
+          : "") + (unique ? " UNIQUE" : "") + (primaryKey ? " PRIMARY KEY" : "") + (
+          defaultValue != null ? " DEFAULT " + (defaultValue instanceof String ? "'" + defaultValue + "'" : defaultValue) : "");
     }
   }
 
@@ -166,7 +278,8 @@ public final class Table {
 
     @Override
     public String toString() {
-      return "CONSTRAINT " + name + " FOREIGN KEY (" + column + ") REFERENCES " + referenceTable + " (" + referenceColumn + ")";
+      return "CONSTRAINT " + name + " FOREIGN KEY (" + column + ") REFERENCES " + referenceTable
+          + " (" + referenceColumn + ")";
     }
   }
 }
