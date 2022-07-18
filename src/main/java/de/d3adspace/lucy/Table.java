@@ -5,8 +5,42 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 public final class Table {
+  public static Truncate truncate(String table) {
+    return new Truncate(table);
+  }
+
+  public static Drop drop(String name) {
+    return new Drop(name);
+  }
+
   public static Create create(String name) {
     return new Create(name, new LinkedList<>(), new LinkedList<>());
+  }
+
+  public static final class Truncate {
+    private final String name;
+
+    private Truncate(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return "TRUNCATE TABLE " + name;
+    }
+  }
+
+  public static final class Drop {
+    private final String name;
+
+    private Drop(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return "DROP TABLE " + name;
+    }
   }
 
   public static final class Create {

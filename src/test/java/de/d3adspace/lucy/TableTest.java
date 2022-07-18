@@ -48,4 +48,14 @@ class TableTest {
     assertEquals("CREATE TABLE table (col1 INTEGER, CONSTRAINT FK_TABLE2 FOREIGN KEY (col1) REFERENCES table2 (col1))",
         Table.create("table").column(Column.of("col1", "INTEGER")).foreignKey("table2", "col1", "col1").toString());
   }
+
+  @Test
+  void testDrop() {
+    assertEquals("DROP TABLE table", Table.drop("table").toString());
+  }
+
+  @Test
+  void testTruncate() {
+    assertEquals("TRUNCATE TABLE table", Table.truncate("table").toString());
+  }
 }
