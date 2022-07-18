@@ -179,4 +179,9 @@ public final class Select {
     var offset = this.offset == 0 ? "" : " OFFSET " + this.offset;
     return String.format("SELECT %s%s FROM %s%s%s%s%s%s%s%s", distinct, select, from, joins, where, having, groupBy, orderBy, limit, offset);
   }
+
+  @Override
+  public String toString() {
+    return build();
+  }
 }
