@@ -18,8 +18,10 @@ public final class Select {
   private final Order order;
   private final Collection<String> groupBy;
 
-  public Select(boolean distinct, Collection<String> select, Collection<String> from, Collection<Join> joins,
-      Condition where, Condition having, int limit, int offset, Order order, Collection<String> groupBy) {
+  public Select(boolean distinct, Collection<String> select, Collection<String> from,
+      Collection<Join> joins,
+      Condition where, Condition having, int limit, int offset, Order order,
+      Collection<String> groupBy) {
     this.distinct = distinct;
     this.select = select;
     this.from = from;
@@ -32,13 +34,14 @@ public final class Select {
     this.groupBy = groupBy;
   }
 
+  public static Select from(String... table) {
+    return new Select(false, new LinkedList<>(), List.of(table), new LinkedList<>(), null, null, 0,
+        0, null, new LinkedList<>());
+  }
+
   public Select columns(String... columns) {
     var select = List.of(columns);
     return new Select(distinct, select, from, joins, where, having, limit, offset, order, groupBy);
-  }
-
-  public static Select from(String... table) {
-    return new Select(false, new LinkedList<>(), List.of(table), new LinkedList<>(), null, null, 0, 0, null, new LinkedList<>());
   }
 
   public Select distinct() {
@@ -105,15 +108,21 @@ public final class Select {
   }
 
   public Select orWhere(Condition where) {
-    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.orWhere(where), having, limit, offset, order, groupBy);
+    return new Select(distinct, select, from, joins,
+        this.where == null ? where : this.where.orWhere(where), having, limit, offset, order,
+        groupBy);
   }
 
   public Select andWhere(Condition where) {
-    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.andWhere(where), having, limit, offset, order, groupBy);
+    return new Select(distinct, select, from, joins,
+        this.where == null ? where : this.where.andWhere(where), having, limit, offset, order,
+        groupBy);
   }
 
   public Select xorWhere(Condition where) {
-    return new Select(distinct, select, from, joins, this.where == null ? where : this.where.xorWhere(where), having, limit, offset, order, groupBy);
+    return new Select(distinct, select, from, joins,
+        this.where == null ? where : this.where.xorWhere(where), having, limit, offset, order,
+        groupBy);
   }
 
   public Select groupBy(String... columns) {
@@ -142,14 +151,16 @@ public final class Select {
     var distinct = this.distinct ? "DISTINCT " : "";
     var select = this.select.isEmpty() ? "*" : String.join(", ", this.select);
     var from = this.from.isEmpty() ? "" : String.join(", ", this.from);
-    var joins = this.joins.isEmpty() ? "" : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
+    var joins = this.joins.isEmpty() ? ""
+        : " " + this.joins.stream().map(Join::toString).collect(Collectors.joining(" "));
     var where = this.where == null ? "" : " WHERE " + this.where;
     var having = this.having == null ? "" : " HAVING " + this.having;
     var groupBy = this.groupBy.isEmpty() ? "" : " GROUP BY " + String.join(", ", this.groupBy);
     var orderBy = this.order == null ? "" : " ORDER BY " + this.order;
     var limit = this.limit == 0 ? "" : " LIMIT " + this.limit;
     var offset = this.offset == 0 ? "" : " OFFSET " + this.offset;
-    return String.format("SELECT %s%s FROM %s%s%s%s%s%s%s%s", distinct, select, from, joins, where, having, groupBy, orderBy, limit, offset);
+    return String.format("SELECT %s%s FROM %s%s%s%s%s%s%s%s", distinct, select, from, joins, where,
+        having, groupBy, orderBy, limit, offset);
   }
 
   @Override

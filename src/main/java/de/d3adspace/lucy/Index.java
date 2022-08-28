@@ -35,7 +35,8 @@ public final class Index {
 
     @Override
     public String toString() {
-      return "CREATE " + (unique ? "UNIQUE " : "") + "INDEX " + name + " ON " + table + " (" + String.join(", ", columns) + ")";
+      return "CREATE " + (unique ? "UNIQUE " : "") + "INDEX " + name + " ON " + table + " ("
+          + String.join(", ", columns) + ")";
     }
   }
 }

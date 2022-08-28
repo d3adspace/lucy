@@ -20,18 +20,6 @@ public class Condition {
     return new Condition(left, Operator.of(operator), right);
   }
 
-  protected Object left() {
-    return left;
-  }
-
-  protected Object right() {
-    return value;
-  }
-
-  public Operator operator() {
-    return operator;
-  }
-
   public static Condition equal(String column, Object value) {
     return new Condition(column, Operator.EQUAL, value);
   }
@@ -45,7 +33,8 @@ public class Condition {
   }
 
   public static Condition notBetween(String column, Object left, Object right) {
-    return new Condition(column, Operator.NOT_BETWEEN, left.toString() + " AND " + right.toString());
+    return new Condition(column, Operator.NOT_BETWEEN,
+        left.toString() + " AND " + right.toString());
   }
 
   public static Condition greaterThan(String column, Object value) {
@@ -100,6 +89,18 @@ public class Condition {
     return new Condition(null, Operator.NOT, condition);
   }
 
+  protected Object left() {
+    return left;
+  }
+
+  protected Object right() {
+    return value;
+  }
+
+  public Operator operator() {
+    return operator;
+  }
+
   public Condition and(Condition right) {
     return new Condition(this, Operator.AND, right);
   }
@@ -142,7 +143,8 @@ public class Condition {
 
   @Override
   public String toString() {
-    return (left == null ? "" : left + " ") + operator.toString() + (value == null ? "" : " " + compileValue());
+    return (left == null ? "" : left + " ") + operator.toString() + (value == null ? ""
+        : " " + compileValue());
   }
 
   public enum Operator {

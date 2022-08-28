@@ -35,7 +35,8 @@ public final class Join {
 
   @Override
   public String toString() {
-    return type + " JOIN " + table + (sourceColumn != null ? " ON " + sourceColumn + (targetColumn != null ? " = " + targetColumn : "") : "" );
+    return type + " JOIN " + table + (sourceColumn != null ? " ON " + sourceColumn + (
+        targetColumn != null ? " = " + targetColumn : "") : "");
   }
 
   public enum Type {

@@ -11,6 +11,18 @@ public final class Database {
     return new Database(name);
   }
 
+  public static Create create(String name) {
+    return new Create(name);
+  }
+
+  public static Drop drop(String name) {
+    return new Drop(name);
+  }
+
+  public static Backup backup(String name) {
+    return new Backup(name, null, false);
+  }
+
   public Create create() {
     return new Create(name);
   }
@@ -21,10 +33,6 @@ public final class Database {
 
   public Backup backup() {
     return new Backup(name, null, false);
-  }
-
-  public static Create create(String name) {
-    return new Create(name);
   }
 
   public static final class Create {
@@ -40,10 +48,6 @@ public final class Database {
     }
   }
 
-  public static Drop drop(String name) {
-    return new Drop(name);
-  }
-
   public static final class Drop {
     private final String name;
 
@@ -55,10 +59,6 @@ public final class Database {
     public String toString() {
       return "DROP DATABASE " + name;
     }
-  }
-
-  public static Backup backup(String name) {
-    return new Backup(name, null, false);
   }
 
   public static final class Backup {
@@ -82,7 +82,8 @@ public final class Database {
 
     @Override
     public String toString() {
-      return "BACKUP DATABASE " + name + (toDisk != null ? " TO DISK = '" + toDisk + "'" : "")  + (withDifferential ? " WITH DIFFERENTIAL" : "");
+      return "BACKUP DATABASE " + name + (toDisk != null ? " TO DISK = '" + toDisk + "'" : "") + (
+          withDifferential ? " WITH DIFFERENTIAL" : "");
     }
   }
 }

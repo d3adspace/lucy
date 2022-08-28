@@ -13,16 +13,16 @@ public final class View {
     this.select = select;
   }
 
-  public Drop drop() {
-    return new Drop(name);
-  }
-
   public static Drop drop(String name) {
     return new Drop(name);
   }
 
   public static View named(String name) {
     return new View(name, false, null);
+  }
+
+  public Drop drop() {
+    return new Drop(name);
   }
 
   public View replaceIfExists() {

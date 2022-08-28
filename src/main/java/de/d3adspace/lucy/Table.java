@@ -13,26 +13,6 @@ public final class Table {
     this.name = name;
   }
 
-  public Drop drop() {
-    return drop(name);
-  }
-
-  public Truncate truncate() {
-    return truncate(name);
-  }
-
-  public Create create() {
-    return create(name);
-  }
-
-  public Alter alter() {
-    return alter(name);
-  }
-
-  public Rename rename(String newName) {
-    return new Rename(name, newName);
-  }
-
   public static Table of(String name) {
     return new Table(name);
   }
@@ -54,6 +34,26 @@ public final class Table {
   }
 
   public static Rename rename(String name, String newName) {
+    return new Rename(name, newName);
+  }
+
+  public Drop drop() {
+    return drop(name);
+  }
+
+  public Truncate truncate() {
+    return truncate(name);
+  }
+
+  public Create create() {
+    return create(name);
+  }
+
+  public Alter alter() {
+    return alter(name);
+  }
+
+  public Rename rename(String newName) {
     return new Rename(name, newName);
   }
 
@@ -259,7 +259,8 @@ public final class Table {
     public String toString() {
       return name + " " + type + (notNull ? " NOT NULL" : "") + (autoIncrement ? " AUTO_INCREMENT"
           : "") + (unique ? " UNIQUE" : "") + (primaryKey ? " PRIMARY KEY" : "") + (
-          defaultValue != null ? " DEFAULT " + (defaultValue instanceof String ? "'" + defaultValue + "'" : defaultValue) : "");
+          defaultValue != null ? " DEFAULT " + (defaultValue instanceof String ? "'" + defaultValue
+              + "'" : defaultValue) : "");
     }
   }
 
