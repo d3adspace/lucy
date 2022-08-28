@@ -76,4 +76,10 @@ class DatabaseTest {
     var backup = Database.named("test").backup().toDisk("/tmp/test.db").withDifferential();
     assertEquals("BACKUP DATABASE test TO DISK = '/tmp/test.db' WITH DIFFERENTIAL", backup.toString());
   }
+
+  @Test
+  void testShowTables() {
+    var show = Database.showTables("test");
+    assertEquals("SHOW TABLES FROM test", show.toString());
+  }
 }

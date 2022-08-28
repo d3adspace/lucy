@@ -1,5 +1,8 @@
 package de.d3adspace.lucy;
 
+import de.d3adspace.lucy.Show.Databases;
+import de.d3adspace.lucy.Show.Tables;
+
 public final class Database {
   private final String name;
 
@@ -33,6 +36,10 @@ public final class Database {
 
   public Backup backup() {
     return new Backup(name, null, false);
+  }
+
+  public static Tables showTables(String name) {
+    return Show.tables(name);
   }
 
   public static final class Create {
